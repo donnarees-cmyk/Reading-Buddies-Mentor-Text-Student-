@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading Buddies: Interactive Tutorial</title>
+<style>
+:root{--bg:#f7f5ef;--card:#fff;--ink:#222;--muted:#666;--accent:#2f6f8f;--ok:#2e7d32;--bad:#c62828;--line:#d9d4c5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1d1f;--card:#26282b;--ink:#eee;--muted:#aaa;--accent:#7cc0de;--ok:#7bc67e;--bad:#ef8a8a;--line:#3d4046}}
+:root[data-theme="dark"]{--bg:#1c1d1f;--card:#26282b;--ink:#eee;--muted:#aaa;--accent:#7cc0de;--ok:#7bc67e;--bad:#ef8a8a;--line:#3d4046}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Georgia,"Times New Roman",serif}
+header{padding:20px 16px 8px;max-width:760px;margin:auto}
+h1{margin:0;font-size:1.6rem}
+.sub{color:var(--muted);font-size:.95rem;font-family:system-ui,sans-serif}
+nav{display:flex;gap:6px;flex-wrap:wrap;max-width:760px;margin:8px auto;padding:0 16px;font-family:system-ui,sans-serif}
+nav button{flex:1;min-width:90px;padding:8px 6px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;cursor:pointer;font-size:.85rem}
+nav button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+main{max-width:760px;margin:auto;padding:8px 16px 40px}
+section{display:none;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+section.on{display:block}
+h2{margin-top:0}
+button.b{font:inherit;font-family:system-ui,sans-serif;padding:8px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;margin:4px 4px 4px 0}
+button.alt{background:transparent;color:var(--accent)}
+textarea{width:100%;min-height:110px;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.q{border-top:1px solid var(--line);padding:12px 0}
+.opt{display:block;width:100%;text-align:left;margin:5px 0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,transparent)}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,transparent)}
+.fb{font-family:system-ui,sans-serif;font-size:.92rem;margin-top:4px;min-height:1.2em}
+.note{background:var(--bg);border-left:4px solid var(--accent);padding:10px 14px;border-radius:6px;font-family:system-ui,sans-serif;font-size:.92rem}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:6px 12px;border:1px solid var(--accent);border-radius:20px;cursor:pointer;font-family:system-ui,sans-serif;font-size:.9rem;background:var(--bg);color:var(--ink)}
+.chip.sel{background:var(--accent);color:#fff}
+.vocab{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
+.vocab summary{cursor:pointer;font-weight:bold}
+select{font:inherit;padding:4px;border-radius:6px;background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+label.ck{display:block;font-family:system-ui,sans-serif;margin:6px 0}
+.wc{font-family:system-ui,sans-serif;color:var(--muted);font-size:.85rem}
+.bar{height:8px;background:var(--line);border-radius:4px;margin:6px 16px 0;max-width:728px;margin-inline:auto}
+.bar i{display:block;height:100%;width:0;background:var(--ok);border-radius:4px;transition:width .3s}
+#timer{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line);font-family:system-ui,sans-serif}
+#tdisp{font-size:2rem;font-weight:bold;font-variant-numeric:tabular-nums;min-width:4.5ch;text-align:center}
+#timer.low #tdisp{color:var(--bad)}
+#timer.ended{animation:fl .6s 4}
+@keyframes fl{50%{background:var(--bad);color:#fff}}
+#timer.big{padding:22px 12px}
+#timer.big #tdisp{font-size:6rem}
+#timer select,.feel select,.interest select{font-size:1rem}
+.interest{font-family:system-ui,sans-serif;margin:8px 0 0}
+.feel{border-top:1px dashed var(--line);margin-top:16px;padding-top:10px;font-family:system-ui,sans-serif;font-size:.92rem}
+#tv{display:none;max-width:760px;margin:8px auto;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:12px;font-family:system-ui,sans-serif;font-size:.92rem}
+#tv.on{display:block}
+#timer label{font-size:.85rem;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <h1><span id="buddy">📖</span> Reading Buddies</h1>
+  <div class="sub">Unit 2 Introduction · Essential Question: How do animals and people interact?</div>
+  <div class="interest">My favorite animal buddy: <select id="bsel"><option value="📖">Choose one…</option><option value="🐶">🐶 Dog</option><option value="🐱">🐱 Cat</option><option value="🐴">🐴 Horse</option><option value="🐰">🐰 Rabbit</option><option value="🐢">🐢 Turtle</option><option value="🦜">🦜 Bird</option><option value="🐠">🐠 Fish</option><option value="🦎">🦎 Reptile</option><option value="🐾">🐾 Another animal</option></select></div>
+</header>
+<div id="timer"><span>⏱️</span><span id="tdisp">5:00</span><button class="b" id="tgo">▶ Start</button><button class="b alt" id="trs">↺ Reset</button><select id="tsel" aria-label="Timer length"><option value="60">1 min</option><option value="120">2 min</option><option value="180">3 min</option><option value="300" selected>5 min</option><option value="420">7 min</option><option value="600">10 min</option><option value="900">15 min</option></select><button class="b alt" id="tbig">🔍 Big</button><label><input type="checkbox" id="tauto"> ⏭ Auto-advance</label><button class="b alt" id="ttv" style="display:none">👩‍🏫 Teacher view</button></div>
+<div class="bar"><i id="prog"></i></div>
+<nav id="nav"></nav>
+<main>
+
+<section id="s0">
+  <h2>1 · Icebreaker</h2>
+  <p>Think about this question: <b>Is reading to a dog a good way to improve reading skills?</b></p>
+  <p>Pick your position:</p>
+  <div class="chips" id="pos">
+    <span class="chip" data-v="Yes">Yes</span><span class="chip" data-v="No">No</span><span class="chip" data-v="Not sure yet">Not sure yet</span>
+  </div>
+  <p>Explain your thinking. Pick a starter if you like:</p>
+  <div class="chips" id="starters">
+    <span class="chip">I think this because…</span>
+    <span class="chip">One reason is…</span>
+    <span class="chip">I can picture how…</span>
+  </div>
+  <textarea id="ice" data-save="ice" placeholder="Type your thinking here…"></textarea>
+  <div class="note">Partner talk: share with a classmate. Listen carefully, then say one thing that is similar and one thing that is different. After the article, you'll come back and see if your position changed.</div>
+  <button class="b" onclick="done(0);go(1)">Done → Vocabulary</button>
+</section>
+
+<section id="s1">
+  <h2>2 · Vocabulary: Natural Allies</h2>
+  <p>Tap each word to reveal a student-friendly definition and an example. Then try the practice.</p>
+  <details class="vocab"><summary>participant</summary>A person who takes part in an activity or event. <i>Example: Every participant in the reading club got a bookmark.</i></details>
+  <details class="vocab"><summary>handler</summary>A person who trains, controls, or works with an animal. <i>Example: The dog's handler kept it calm while kids read.</i></details>
+  <details class="vocab"><summary>well-adjusted</summary>Comfortable and able to handle everyday life and relationships in a healthy way. <i>Example: A well-adjusted dog stays calm around new people.</i></details>
+  <div id="vq"></div>
+  <p><b>Build your Word Network.</b> The center word is <b>natural allies</b>. Add words or ideas that connect to it:</p>
+  <textarea id="wn" data-save="wn" style="min-height:70px" placeholder="Example: partners, helpers, teamwork…"></textarea>
+  <button class="b" onclick="done(1);go(2)">Done → Read the Article</button>
+</section>
+
+<section id="s2">
+  <h2>3 · Read &amp; Think</h2>
+  <div class="note"><b>Your turn to read:</b> Open your <i>myPerspectives</i> book to <b>"Reading Buddies"</b> and read the whole article. This is an expository text, which means its purpose is to give facts, details, and explanations about a topic. Come back here when you finish.</div>
+  <p><b>Before you read,</b> ask yourself: How does the author introduce the topic and use facts and details to help me understand the central idea?</p>
+  <div id="rq"></div>
+  <p><b>Take notes.</b> Write 3 important details from the text (in your own words):</p>
+  <textarea id="notes" data-save="notes" placeholder="1.&#10;2.&#10;3."></textarea>
+  <button class="b" onclick="done(2);go(3)">Done → Summary</button>
+</section>
+
+<section id="s3">
+  <h2>4 · Write a Summary</h2>
+  <p>A <b>summary</b> is a brief, complete overview of a text that matches its original order and includes the main ideas. It leaves out your personal opinions.</p>
+  <p>Sort it out: is each sentence something to <b>include</b> or <b>leave out</b> of a summary?</p>
+  <div id="sq"></div>
+  <p>Now write a summary of "Reading Buddies." Aim for 3–5 sentences.</p>
+  <div class="chips" id="frames">
+    <span class="chip">The article "Reading Buddies" explains…</span>
+    <span class="chip">First, …</span>
+    <span class="chip">Next, …</span>
+    <span class="chip">In conclusion, …</span>
+  </div>
+  <textarea id="sum" data-save="sum" placeholder="Write your summary…"></textarea>
+  <div class="wc" id="wc">0 words</div>
+  <p><b>Self-check:</b></p>
+  <label class="ck"><input type="checkbox" class="chk"> I stated the central idea.</label>
+  <label class="ck"><input type="checkbox" class="chk"> I included key details in the order they happened.</label>
+  <label class="ck"><input type="checkbox" class="chk"> I used my own words.</label>
+  <label class="ck"><input type="checkbox" class="chk"> I left out my opinions.</label>
+  <button class="b" onclick="done(3);go(4)">Done → QuickWrite</button>
+</section>
+
+<section id="s4">
+  <h2>5 · QuickWrite</h2>
+  <p>Consider the discussions, the video, and the <i>Mentor Text</i> you read. Think about the Essential Question:</p>
+  <p><b>How do animals and people interact?</b></p>
+  <div class="interest" style="margin-bottom:10px">Which kind of animal-human teamwork interests you most? <select id="tw" data-sel="tw"><option value="">Choose one…</option><option>🐕‍🦺 Service dogs</option><option>📚 Reading dogs</option><option>🐴 Therapy horses</option><option>🐱 Comfort pets</option><option>🐬 Marine animals</option><option>🐾 Something else</option></select></div>
+  <p>Write your first thoughts:</p>
+  <textarea id="qw" data-save="qw" placeholder="Animals and people interact when…"></textarea>
+  <p><b>Revisit your Icebreaker position.</b> Did it change?</p>
+  <select id="chg"><option value="">Choose…</option><option>Yes, it changed</option><option>No, it stayed the same</option><option>It got stronger</option></select>
+  <textarea id="why" data-save="why" style="min-height:70px;margin-top:8px" placeholder="What in the article made you think that?"></textarea>
+  <div class="note" id="fin" style="display:none">🎉 Nice work! Show your teacher this screen or copy your writing into Canvas.</div>
+  <button class="b" onclick="done(4);document.getElementById('fin').style.display='block'">Finish</button>
+  <button class="b alt" onclick="copyAll()">Copy all my answers</button>
+  <button class="b alt" onclick="if(confirm('Clear everything?')){clearAll()}">Start over</button>
+</section>
+
+</main>
+<script>
+var titles=["Icebreaker","Vocabulary","Read","Summary","QuickWrite"];
+var doneSet={};
+function store(k,v){try{localStorage.setItem("rb_"+k,v)}catch(e){}}
+function load(k){try{return localStorage.getItem("rb_"+k)||""}catch(e){return ""}}
+var nav=document.getElementById("nav");
+titles.forEach(function(t,i){var b=document.createElement("button");b.textContent=(i+1)+". "+t;b.onclick=function(){go(i)};nav.appendChild(b)});
+function go(i){document.querySelectorAll("section").forEach(function(s,j){s.classList.toggle("on",i===j)});
+ nav.querySelectorAll("button").forEach(function(b,j){b.classList.toggle("on",i===j)});window.scrollTo(0,0)}
+function done(i){doneSet[i]=1;store("done",JSON.stringify(doneSet));prog()}
+function prog(){document.getElementById("prog").style.width=(Object.keys(doneSet).length/5*100)+"%"}
+
+function quiz(id,items){
+ var box=document.getElementById(id);
+ items.forEach(function(it){
+  var d=document.createElement("div");d.className="q";
+  d.innerHTML="<div>"+it.q+"</div>";
+  var fb=document.createElement("div");fb.className="fb";
+  it.o.forEach(function(o,idx){
+   var b=document.createElement("button");b.className="opt";b.textContent=o;
+   b.onclick=function(){
+    var ok=idx===it.a;
+    b.className="opt "+(ok?"right":"wrong");
+    fb.textContent=ok?"✅ "+it.fb:"Try again. "+(it.hint||"");
+    fb.style.color=ok?"var(--ok)":"var(--bad)";
+   };d.appendChild(b)});
+  d.appendChild(fb);box.appendChild(d)});
+}
+quiz("vq",[
+ {q:"A dog's <b>handler</b> is most likely…",o:["a dog's veterinarian","the person who works with and guides the dog","a stray dog"],a:1,fb:"Right: a handler works with and controls an animal."},
+ {q:"Which person is a <b>participant</b>?",o:["A student who joins the reading program","A person who only watches from home","The author of a book"],a:0,fb:"A participant takes part in the activity."},
+ {q:"A <b>well-adjusted</b> therapy dog would…",o:["panic around strangers","stay calm and friendly in new places","refuse to be near children"],a:1,fb:"Well-adjusted means comfortable and healthy in daily life."}
+]);
+quiz("rq",[
+ {q:"After reading, what is the best description of the author's purpose?",o:["To entertain with a made-up story","To give facts and explanations about a topic","To argue that dogs are better than cats"],a:1,fb:"Expository texts inform readers with facts and explanations.",hint:"Remember what 'expository' means."},
+ {q:"Which would be the strongest key detail to use as text evidence?",o:["A fact or example from the article","My own favorite pet","A guess about what happens next"],a:0,fb:"Strong evidence comes straight from the text.",hint:"Evidence must come from the article."},
+ {q:"Which of these is a good way to find the central idea?",o:["Look at only the first word","Ask what most details are mostly about","Pick the longest paragraph"],a:1,fb:"The central idea is what the details add up to."}
+]);
+quiz("sq",[
+ {q:"A sentence naming the article's central idea",o:["Include","Leave out"],a:0,fb:"Yes, summaries state the central idea."},
+ {q:"\"I think dogs are the cutest animals ever.\"",o:["Include","Leave out"],a:1,fb:"That's your opinion, so leave it out."},
+ {q:"A key detail that supports the central idea",o:["Include","Leave out"],a:0,fb:"Key details belong in a summary."},
+ {q:"A tiny example that only appears once and isn't important",o:["Include","Leave out"],a:1,fb:"Summaries skip small details."}
+]);
+
+document.querySelectorAll("[data-save]").forEach(function(t){
+ t.value=load(t.dataset.save);t.addEventListener("input",function(){store(t.dataset.save,t.value);if(t.id==="sum")wc()})});
+function wc(){var v=document.getElementById("sum").value.trim();document.getElementById("wc").textContent=(v?v.split(/\s+/).length:0)+" words"}
+wc();
+function chipsInsert(id,ta){document.getElementById(id).addEventListener("click",function(e){
+ if(!e.target.classList.contains("chip"))return;var t=document.getElementById(ta);
+ t.value+=(t.value?" ":"")+e.target.textContent.replace("…","");t.dispatchEvent(new Event("input"));t.focus()})}
+chipsInsert("starters","ice");chipsInsert("frames","sum");
+var pos=load("pos");
+document.querySelectorAll("#pos .chip").forEach(function(c){
+ if(c.dataset.v===pos)c.classList.add("sel");
+ c.onclick=function(){document.querySelectorAll("#pos .chip").forEach(function(x){x.classList.remove("sel")});c.classList.add("sel");store("pos",c.dataset.v)}});
+var chg=document.getElementById("chg");chg.value=load("chg");chg.onchange=function(){store("chg",chg.value)};
+try{doneSet=JSON.parse(load("done")||"{}")}catch(e){doneSet={}}
+prog();
+function copyAll(){
+ var t="ICEBREAKER ("+load("pos")+"): "+load("ice")+"\n\nWORD NETWORK: "+load("wn")+"\n\nNOTES: "+load("notes")+"\n\nSUMMARY: "+load("sum")+"\n\nQUICKWRITE: "+load("qw")+"\n\nPOSITION CHANGE: "+load("chg")+" - "+load("why");
+ var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();
+ try{document.execCommand("copy");alert("Copied! Paste into Canvas or a doc.")}catch(e){alert("Copy didn't work. Select your text manually.")}
+ document.body.removeChild(ta)}
+function clearAll(){try{Object.keys(localStorage).filter(function(k){return k.indexOf("rb_")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(e){}location.reload()}
+/* interest dropdown */
+var bsel=document.getElementById('bsel'),buddy=document.getElementById('buddy');
+bsel.value=load('buddy')||'📖';buddy.textContent=bsel.value;
+bsel.onchange=function(){buddy.textContent=bsel.value;store('buddy',bsel.value)};
+document.querySelectorAll('[data-sel]').forEach(function(s){s.value=load('sel_'+s.dataset.sel);s.onchange=function(){store('sel_'+s.dataset.sel,s.value)}});
+/* feeling dropdown per activity */
+document.querySelectorAll('section').forEach(function(sec,i){
+ var d=document.createElement('div');d.className='feel';
+ d.innerHTML='How is this activity going? <select><option value="">Pick an emoji…</option><option>😀 I got it!</option><option>🙂 Pretty good</option><option>🤔 Need a little help</option><option>😵 Totally lost</option></select>';
+ var s=d.querySelector('select');s.value=load('feel'+i);s.onchange=function(){store('feel'+i,s.value)};
+ sec.appendChild(d)});
+/* timer */
+var tLeft=300,tInt=null,tBox=document.getElementById('timer'),tDisp=document.getElementById('tdisp'),tGo=document.getElementById('tgo'),tSel=document.getElementById('tsel');
+function tShow(){var m=Math.floor(tLeft/60),s=tLeft%60;tDisp.textContent=m+':'+(s<10?'0':'')+s;tBox.classList.toggle('low',tLeft<=30&&tLeft>0)}
+function beep(){try{var c=new (window.AudioContext||window.webkitAudioContext)();[0,.35,.7].forEach(function(t){var o=c.createOscillator(),g=c.createGain();o.frequency.value=880;o.connect(g);g.connect(c.destination);g.gain.value=.2;o.start(c.currentTime+t);o.stop(c.currentTime+t+.25)})}catch(e){}}
+function tStop(){clearInterval(tInt);tInt=null;tGo.textContent='▶ Start'}
+function tReset(){tStop();tBox.classList.remove('ended');tLeft=parseInt(tSel.value,10);tShow()}
+tGo.onclick=function(){
+ if(tInt){tStop();tGo.textContent='▶ Resume';return}
+ if(tLeft<=0)tReset();
+ tBox.classList.remove('ended');tGo.textContent='⏸ Pause';
+ tInt=setInterval(function(){tLeft--;tShow();if(tLeft<=0){tStop();tGo.textContent='▶ Start';tBox.classList.add('ended');beep();if(document.getElementById('tauto').checked&&cur<4){setTimeout(function(){go(cur+1);tGo.onclick()},2500)}}},1000)};
+document.getElementById('trs').onclick=tReset;
+tSel.onchange=tReset;
+document.getElementById('tbig').onclick=function(){tBox.classList.toggle('big')};
+var cur=0;var _go=go;go=function(i){cur=i;_go(i);tReset()};
+/* teacher view */
+var feelOpts=['\ud83d\ude00 I got it!','\ud83d\ude42 Pretty good','\ud83e\udd14 Need a little help','\ud83d\ude35 Totally lost'],cols=['#2e7d32','#7cb342','#f9a825','#c62828'];
+var tv=document.createElement('div');tv.id='tv';document.body.insertBefore(tv,document.getElementById('nav'));
+function renderTV(sample){
+ var samp=[[18,4,2,0],[10,8,5,1],[7,9,6,2],[5,8,8,3],[12,7,4,1]],rows='';
+ titles.forEach(function(t,i){
+  var c=[0,0,0,0];
+  if(sample){c=samp[i]}else{var k=feelOpts.indexOf(load('feel'+i));if(k>=0)c[k]=1}
+  var tot=c.reduce(function(a,b){return a+b},0)||1;
+  rows+='<div style="margin:10px 0"><b>'+(i+1)+'. '+t+'</b><div style="display:flex;height:20px;border-radius:6px;overflow:hidden;background:var(--line)">'+c.map(function(n,k){return '<span style="width:'+(n/tot*100)+'%;background:'+cols[k]+'"></span>'}).join('')+'</div><span class="wc">'+c.map(function(n,k){return feelOpts[k].split(' ')[0]+' '+n}).join('   ')+'</span></div>'});
+ tv.innerHTML='<b>\ud83d\udc69\u200d\ud83c\udfeb Teacher view</b><div class="wc" style="margin:4px 0">'+(sample?'SAMPLE DATA for a pretend class of 24. Not real student answers.':'Shows this device only. Each student\'s answers stay in their own browser.')+'</div>'+rows+'<button class="b alt" onclick="renderTV('+(!sample)+')">'+(sample?'Show my device':'Preview sample class')+'</button><button class="b alt" onclick="tv.classList.remove(\'on\')">Close</button>'}
+document.getElementById('ttv').onclick=function(){if(tv.classList.contains('on')){tv.classList.remove('on')}else{renderTV(false);tv.classList.add('on')}};
+tReset();
+go(0);
+</script>
+</body>
+</html>
